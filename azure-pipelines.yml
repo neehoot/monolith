@@ -18,14 +18,7 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(system.defaultworkingdirectory)'
-    Contents: |
-      **/*.jar
-      Dockerfile
-      azure/*
-    TargetFolder: '$(build.artifactstagingdirectory)'
+
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
@@ -36,3 +29,17 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(system.defaultworkingdirectory)'
+    Contents: |
+      **/*.jar
+      Dockerfile
+      azure/*
+    TargetFolder: '$(build.artifactstagingdirectory)'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'acr'
+    repository: 'monolith'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
